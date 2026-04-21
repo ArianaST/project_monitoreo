@@ -1,0 +1,28 @@
+#no se suben al git por qus on pesados y marca error al hacer commit, se ignoran con este archivo .gitignore
+@"
+# Conda
+.conda/
+conda-meta/
+envs/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+venv/
+env/
+
+# Node
+node_modules/
+dist/
+.quasar/
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+"@ | Out-File -FilePath .gitignore -Encoding utf8
