@@ -1,7 +1,7 @@
 # GitHub Copilot Instructions — MonitoreoTremor App (Tesis Maestría)
 
 ## ¿Qué es este proyecto?
-App hibrida de monitoreo de temblor para pacientes con parkinson. Registra periodos on/off por día, captura video de tapping, lee el acelerómetro del celular para medir el temblor y envía alertas al médico por correo cuando este empeorando despues de un tiempo el paciente. Tiene dos interfaces separadas: app móvil híbrida para el paciente y dashboard web para el médico.
+App hibrida de monitoreo de temblor para pacientes con parkinson. Registra tomas de medicacion antes y despues de cada toma maneja los estados correctamente, captura tappings, lee el acelerómetro del celular para medir el temblor y envía alertas al médico por correo cuando este empeorando despues de un tiempo el paciente. Tiene dos interfaces separadas: app móvil híbrida para el paciente accesible con correctos manejos de logos colores.
 ---
 
 ## Stack tecnológico 

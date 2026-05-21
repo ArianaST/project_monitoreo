@@ -1,0 +1,12 @@
+{
+  "appId": "mx.patito.paciente",
+  "appName": "PaTITO",
+  "webDir": "app-paciente/dist",
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_patito",
+      "iconColor": "#840705",
+      "presentationOptions": ["badge", "sound", "banner", "list"]
+    }
+  }
+}
