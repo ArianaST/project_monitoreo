@@ -95,7 +95,6 @@
             </div>
             <div class="flex-1">
               <p :class="['text-xs font-bold uppercase tracking-wide', sessionStore.medicationState === 'ON' ? 'text-emerald-700' : 'text-primary']">
-                Estado ON
               </p>
               <p class="text-base font-bold text-gray-900">Ya la tomé</p>
               <p class="text-xs text-gray-600">Activa medición después de la toma</p>
@@ -118,7 +117,6 @@
             </div>
             <div class="flex-1">
               <p :class="['text-xs font-bold uppercase tracking-wide', sessionStore.medicationState === 'OFF' ? 'text-rose-800' : 'text-rose-600']">
-                Estado OFF
               </p>
               <p class="text-base font-bold text-gray-900">Todavía no la tomé</p>
               <p class="text-xs text-gray-600">Suma tiempo sin medicación</p>
@@ -188,7 +186,7 @@
           class="mb-3 flex items-center gap-3 rounded-2xl border-2 border-dashed border-gray-200 bg-gray-50 p-4"
         >
           <Lock class="h-5 w-5 shrink-0 text-gray-400" />
-          <p class="text-sm font-medium text-gray-400">Se activa solo cuando registres “Ya la tomé” y el estado sea ON</p>
+          <p class="text-sm font-medium text-gray-400">Se activa solo cuando registres “Ya la tomé” </p>
         </div>
         <template v-else>
           <step-button

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">PaTITO</string>
-    <string name="title_activity_main">PaTITO</string>
+    <string name="app_name">PaTITO Movil</string>
+    <string name="title_activity_main">PaTITO Movil</string>
     <string name="package_name">mx.patito.paciente</string>
     <string name="custom_url_scheme">mx.patito.paciente</string>
 </resources>

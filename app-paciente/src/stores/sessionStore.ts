@@ -427,6 +427,20 @@ export const useSessionStore = defineStore('session', () => {
 
   const loadNotificationSettings = async () => {
     notificationsEnabled.value = await getNotificationsEnabledPreference()
+
+    if (notificationsEnabled.value) {
+      const pendingCount = await getPendingMedicationNotificationCount()
+      pendingNotificationCount.value = pendingCount
+
+      // Las notificaciones locales deben seguir activas aunque no haya sesión abierta.
+      // Si Android las limpió o el APK se reinstaló, se vuelven a programar al abrir la app.
+      if (pendingCount === 0) {
+        await syncNotificationsFromSchedule()
+      }
+
+      return
+    }
+
     await refreshPendingNotificationCount()
   }
 
@@ -1104,9 +1118,13 @@ export const useSessionStore = defineStore('session', () => {
     try {
       await Preferences.remove({ key: 'auth_token' })
       await Preferences.remove({ key: 'user_name' })
+      await Preferences.remove({ key: 'user_email' })
       await Preferences.remove({ key: 'pending_events' })
       await Preferences.remove({ key: SNAPSHOT_KEY })
-      await cancelMedicationNotifications()
+      await Preferences.set({ key: 'biometric_enabled', value: 'false' })
+
+      // No cancelamos las notificaciones al cerrar sesión.
+      // Son recordatorios locales del tratamiento y deben seguir funcionando sin sesión abierta.
 
       patientName.value = ''
       patientEmail.value = ''

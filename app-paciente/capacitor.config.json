@@ -1,6 +1,6 @@
 {
   "appId": "mx.patito.paciente",
-  "appName": "PaTITO",
+  "appName": "PaTITO Movil",
   "webDir": "dist",
   "server": {
     "androidScheme": "http",

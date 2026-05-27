@@ -7,7 +7,6 @@ const PATITO_NOTIFICATION_IDS_KEY = 'patito_notification_ids'
 const PATITO_NOTIFICATIONS_ENABLED_KEY = 'patito_notifications_enabled'
 const CHANNEL_ID = 'patito-medication-reminders'
 const ACTION_TYPE_ID = 'PATITO_REMINDER_ACTIONS'
-const SCHEDULE_DAYS = 3
 const SYMPTOM_REMINDER_EVERY_HOURS = 2
 const NOTIFICATION_GROUP = 'patito-seguimiento'
 const SMALL_ICON = 'ic_stat_patito'
@@ -73,44 +72,48 @@ function buildDailyDoseTimes(startTime: string, intervalHours: number, day: Date
   return doses
 }
 
-function buildFutureDoseTimes(config: MedicationNotificationConfig) {
-  const intervalHours = normalizeInterval(config.intervalHours)
-  const startTime = normalizeTime(config.startTime)
-  const now = new Date()
-  const dates: Date[] = []
+function buildDailyRepeatingDoseSlots(config: MedicationNotificationConfig) {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
-  for (let offset = 0; offset < SCHEDULE_DAYS; offset++) {
-    const day = new Date(now)
-    day.setDate(now.getDate() + offset)
-
-    buildDailyDoseTimes(startTime, intervalHours, day).forEach((dose) => {
-      if (dose.getTime() > now.getTime() + 60_000) dates.push(dose)
-    })
-  }
-
-  return dates
+  return buildDailyDoseTimes(
+    normalizeTime(config.startTime),
+    normalizeInterval(config.intervalHours),
+    today
+  )
 }
 
-function buildSymptomReminderTimes() {
+function buildRepeatingTwoHourSymptomSlots() {
   const now = new Date()
-  const dates: Date[] = []
+  const slots: Date[] = []
 
-  for (let offset = 0; offset < SCHEDULE_DAYS; offset++) {
-    const day = new Date(now)
-    day.setDate(now.getDate() + offset)
-    day.setHours(7, 0, 0, 0)
+  const startHour = now.getHours() % SYMPTOM_REMINDER_EVERY_HOURS === 0
+    ? now.getHours()
+    : now.getHours() + 1
 
-    const dayEnd = new Date(day)
-    dayEnd.setHours(22, 0, 0, 0)
-
-    let cursor = new Date(day)
-    while (cursor <= dayEnd) {
-      if (cursor.getTime() > now.getTime() + 60_000) dates.push(new Date(cursor))
-      cursor = new Date(cursor.getTime() + SYMPTOM_REMINDER_EVERY_HOURS * 60 * 60 * 1000)
-    }
+  for (let hour = 0; hour < 24; hour += SYMPTOM_REMINDER_EVERY_HOURS) {
+    const slot = new Date()
+    slot.setHours(hour, 0, 0, 0)
+    slots.push(slot)
   }
 
-  return dates
+  // Reordenamos para que las primeras notificaciones sean las próximas del día.
+  return slots.sort((a, b) => {
+    const aFuture = a.getHours() >= startHour ? a.getHours() : a.getHours() + 24
+    const bFuture = b.getHours() >= startHour ? b.getHours() : b.getHours() + 24
+    return aFuture - bFuture
+  })
+}
+
+function scheduleOnFor(date: Date) {
+  return {
+    on: {
+      hour: date.getHours(),
+      minute: date.getMinutes(),
+      second: 0,
+    },
+    allowWhileIdle: true,
+  }
 }
 
 function formatTime(date: Date) {
@@ -251,37 +254,37 @@ export async function scheduleMedicationNotifications(
   }
 
   const doseLabel = config.doseLabel || 'Levodopa'
-  const doseTimes = buildFutureDoseTimes(config)
-  const symptomTimes = buildSymptomReminderTimes()
+  const repeatingDoseSlots = buildDailyRepeatingDoseSlots(config)
+  const repeatingSymptomSlots = buildRepeatingTwoHourSymptomSlots()
+
   const notifications = [
-    ...doseTimes.map((date, index) =>
+    ...repeatingDoseSlots.map((date, index) =>
       withPatitoVisuals({
-        id: notificationId(1, date, index),
+        id: 110000 + index,
         title: 'PaTITO • Hora de levodopa',
         body: `${doseLabel} programada a las ${formatTime(date)}.`,
-        largeBody: `Toma programada a las ${formatTime(date)}. Abre PaTITO y registra si ya la tomaste para pasar a ON o si sigues OFF.`,
+        largeBody: `Toma programada diaria a las ${formatTime(date)}. Abre PaTITO y registra si ya la tomaste para pasar a ON o si sigues OFF.`,
         summaryText: 'Medicamento programado',
-        schedule: { at: date, allowWhileIdle: true },
+        schedule: scheduleOnFor(date),
         channelId: CHANNEL_ID,
         autoCancel: true,
         extra: { patito: true, route: '/registro', modo: 'confirmar' },
       })
     ),
-    ...symptomTimes.map((date, index) =>
+    ...repeatingSymptomSlots.map((date, index) =>
       withPatitoVisuals({
-        id: notificationId(2, date, index),
-        title: 'PaTITO • Seguimiento rápido',
-        body: 'Registra síntomas o ejercicio de tapping.',
-        largeBody: 'Completa un registro corto de síntomas, tapping o acelerómetro antes/después de la toma. Esto mejora tu historial diario.',
+        id: 220000 + index,
+        title: 'PaTITO • Seguimiento cada 2 horas',
+        body: 'Registra síntomas, tapping o acelerómetro.',
+        largeBody: 'Recordatorio automático cada 2 horas. Completa un registro corto antes o después de la toma para mantener actualizado tu historial.',
         summaryText: 'Registro de síntomas y ejercicio',
-        schedule: { at: date, allowWhileIdle: true },
+        schedule: scheduleOnFor(date),
         channelId: CHANNEL_ID,
         autoCancel: true,
         extra: { patito: true, route: '/registro', modo: 'sintomas' },
       })
     ),
   ]
-
   if (notifications.length === 0) {
     await setNotificationsEnabledPreference(false)
     await saveScheduledIds([])
@@ -295,7 +298,7 @@ export async function scheduleMedicationNotifications(
   return {
     enabled: true,
     scheduledCount: notifications.length,
-    message: `Recordatorios PaTITO programados: ${notifications.length}`,
+    message: `Recordatorios PaTITO activos: ${repeatingDoseSlots.length} de medicación y ${repeatingSymptomSlots.length} de seguimiento cada 2 horas`,
   }
 }
 
@@ -363,3 +366,4 @@ export async function initNotificationActionHandlers(router: Router) {
     await router.push('/registro')
   })
 }
+
