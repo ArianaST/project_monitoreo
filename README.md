@@ -44,7 +44,10 @@ Permite registrar tomas de medicamento, estados ON/OFF, síntomas, ejercicios mo
 ![Registro](docs/screenshots/02-registro.png)
 ![Inicio](docs/screenshots/03-home.png)
 
+```txt
+docs/screenshots/
 
+```
 ---
 ## Tecnologías
 App paciente
