@@ -13,16 +13,6 @@ Permite registrar tomas de medicamento, estados ON/OFF, síntomas, ejercicios mo
 - [Capturas de pantalla](#capturas-de-pantalla)
 - [Tecnologías](#tecnologías)
 - [Estructura del proyecto](#estructura-del-proyecto)
-- [Instalación](#instalación)
-- [Configuración de variables de entorno](#configuración-de-variables-de-entorno)
-- [Ejecutar backend](#ejecutar-backend)
-- [Ejecutar app paciente](#ejecutar-app-paciente)
-- [Ejecutar en Android](#ejecutar-en-android)
-- [Base de datos](#base-de-datos)
-- [Rutas principales del backend](#rutas-principales-del-backend)
-- [Actualizar el repositorio](#actualizar-el-repositorio)
-- [Limitaciones](#limitaciones)
-- [Autor](#autor)
 
 ---
 
@@ -53,7 +43,32 @@ Permite registrar tomas de medicamento, estados ON/OFF, síntomas, ejercicios mo
 ![Login](docs/screenshots/01-login.png)
 ![Registro](docs/screenshots/02-registro.png)
 ![Inicio](docs/screenshots/03-home.png)
-![Tomar medicamento](docs/screenshots/04-t
 
-```txt
-docs/screenshots/
+
+---
+## Tecnologías
+App paciente
+Vue 3
+TypeScript
+Composition API
+Quasar Framework
+Tailwind CSS
+Pinia
+Capacitor
+Android Studio
+
+# Plugins nativos
+Capacitor Preferences
+Capacitor Local Notifications
+Capacitor Network
+Biometric Auth
+Capacitor Motion / sensores móviles
+
+# Backend
+Node.js
+Express
+TypeScript
+PostgreSQL / Supabase
+JWT
+bcrypt
+CORS
